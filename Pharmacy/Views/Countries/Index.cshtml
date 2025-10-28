@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "Countries";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">Countries Management</h3>
+                    <button type="button" class="btn btn-primary" onclick="openCountryModal()">
+                        <i class="fas fa-plus"></i> Add New Country
+                    </button>
+                </div>
+                <div class="card-body">
+                        <!-- Search removed temporarily -->
+                        <!-- Search Form removed -->
+
+                    <!-- Countries Table -->
+                    <div id="countriesTableContainer">
+                        <!-- Table content will be loaded via AJAX -->
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Country Modal -->
+<div class="modal fade" id="countryModal" tabindex="-1" aria-labelledby="countryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="countryModalLabel">
+                    <i class="fas fa-flag me-2"></i>
+                    <span id="modalTitle">Add Country</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="countryModalBody">
+                <!-- Form content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="saveCountryBtn">
+                    <i class="fas fa-save me-1"></i>
+                    <span id="saveButtonText">Save Country</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Load countries table on page load
+            loadCountriesList();
+            
+            // Search temporarily removed
+            
+            // Save country button click
+            $('#saveCountryBtn').click(function() {
+                saveCountry();
+            });
+        });
+        
+        function loadCountriesList(searchTerm = '') {
+            $.get('@Url.Action("GetCountries", "Countries")', { searchTerm: searchTerm })
+                .done(function(data) {
+                    $('#countriesTableContainer').html(data);
+                })
+                .fail(function() {
+                    $('#countriesTableContainer').html('<div class="alert alert-danger">Error loading countries. Please try again.</div>');
+                });
+        }
+    </script>
+}

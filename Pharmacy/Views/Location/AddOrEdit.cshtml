@@ -1,0 +1,167 @@
+@model dynamic
+
+<form id="locationForm" method="post">
+    @Html.AntiForgeryToken()
+    
+    @if (Model is LocationCreateViewModel)
+    {
+        var createModel = Model as LocationCreateViewModel;
+        <input type="hidden" name="id" value="0" />
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-road me-1"></i>
+                        Street Address <span class="text-danger">*</span>
+                    </label>
+                    <input name="Street" class="form-control" placeholder="Enter street address" value="@createModel.Street" required />
+                    <span class="text-danger" data-valmsg-for="Street" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-city me-1"></i>
+                        City <span class="text-danger">*</span>
+                    </label>
+                    <input name="City" class="form-control" placeholder="Enter city name" value="@createModel.City" required />
+                    <span class="text-danger" data-valmsg-for="City" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-map me-1"></i>
+                        State/Province
+                    </label>
+                    <input name="State" class="form-control" placeholder="Enter state or province" value="@createModel.State" />
+                    <span class="text-danger" data-valmsg-for="State" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-flag me-1"></i>
+                        Country <span class="text-danger">*</span>
+                    </label>
+                    <select name="CountriesId" class="form-select" required>
+                        <option value="">Select a country</option>
+                        @if (createModel.AvailableCountries != null)
+                        {
+                            @foreach (var country in createModel.AvailableCountries)
+                            {
+                                if (country.Id == createModel.CountriesId)
+                                {
+                                    <option value="@country.Id" selected>@country.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@country.Id">@country.Name</option>
+                                }
+                            }
+                        }
+                    </select>
+                    <span class="text-danger" data-valmsg-for="CountriesId" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-clock me-1"></i>
+                        Time Zone
+                    </label>
+                    <input name="TimeZone" class="form-control" placeholder="Enter time zone (e.g., UTC+5)" value="@createModel.TimeZone" />
+                    <span class="text-danger" data-valmsg-for="TimeZone" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model is LocationUpdateViewModel)
+    {
+        var updateModel = Model as LocationUpdateViewModel;
+        <input type="hidden" name="id" value="@updateModel.Id" />
+        <input type="hidden" name="Id" value="@updateModel.Id" />
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-road me-1"></i>
+                        Street Address <span class="text-danger">*</span>
+                    </label>
+                    <input name="Street" class="form-control" placeholder="Enter street address" value="@updateModel.Street" required />
+                    <span class="text-danger" data-valmsg-for="Street" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-city me-1"></i>
+                        City <span class="text-danger">*</span>
+                    </label>
+                    <input name="City" class="form-control" placeholder="Enter city name" value="@updateModel.City" required />
+                    <span class="text-danger" data-valmsg-for="City" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-map me-1"></i>
+                        State/Province
+                    </label>
+                    <input name="State" class="form-control" placeholder="Enter state or province" value="@updateModel.State" />
+                    <span class="text-danger" data-valmsg-for="State" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-flag me-1"></i>
+                        Country <span class="text-danger">*</span>
+                    </label>
+                    <select name="CountriesId" class="form-select" required>
+                        <option value="">Select a country</option>
+                        @if (updateModel.AvailableCountries != null)
+                        {
+                            @foreach (var country in updateModel.AvailableCountries)
+                            {
+                                if (country.Id == updateModel.CountriesId)
+                                {
+                                    <option value="@country.Id" selected>@country.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@country.Id">@country.Name</option>
+                                }
+                            }
+                        }
+                    </select>
+                    <span class="text-danger" data-valmsg-for="CountriesId" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-clock me-1"></i>
+                        Time Zone
+                    </label>
+                    <input name="TimeZone" class="form-control" placeholder="Enter time zone (e.g., UTC+5)" value="@updateModel.TimeZone" />
+                    <span class="text-danger" data-valmsg-for="TimeZone" data-valmsg-replace="true"></span>
+                </div>
+            </div>
+        </div>
+    }
+</form>

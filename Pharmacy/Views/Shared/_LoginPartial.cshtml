@@ -6,16 +6,34 @@
 
     @if (SignInManager.IsSignedIn(User))
     {
-       <li class="nav-item">
-            <span class="navbar-text me-3">
-                Hello @User.Identity.Name!
-            </span>
-        </li>
-       <li class="nav-item">
-            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                @Html.AntiForgeryToken()
-                <button id="logout" type="submit" class="btn btn-link text-dark p-0">Logout</button>
-            </form>
+        var user = await UserManager.GetUserAsync(User);
+        var displayName = string.IsNullOrWhiteSpace(user?.FullName) ? user?.UserName ?? User.Identity.Name : user.FullName;
+        var email = user?.Email ?? User.Identity.Name;
+    var avatarUrl = Url.Content("~/Images/download (2).png");
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="@avatarUrl" alt="avatar" class="rounded-circle me-2" style="width:32px;height:32px;object-fit:cover;" />
+                <span class="d-none d-md-inline">@displayName</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown" style="min-width:220px;">
+                <li class="px-3 py-2">
+                    <div class="d-flex align-items-center">
+                        <img src="@avatarUrl" alt="avatar" class="rounded-circle me-2" style="width:40px;height:40px;object-fit:cover;" />
+                        <div>
+                            <div class="fw-bold">@displayName</div>
+                            <div class="text-muted small">@email</div>
+                        </div>
+                    </div>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li class="px-3 py-2">
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <button id="logout" type="submit" class="btn btn-link text-danger p-0">Logout</button>
+                    </form>
+                </li>
+            </ul>
         </li>
     }
     else

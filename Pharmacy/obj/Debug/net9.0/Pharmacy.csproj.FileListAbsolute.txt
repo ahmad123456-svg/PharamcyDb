@@ -156,7 +156,6 @@ C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug
 C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\scopedcss\bundle\Pharmacy.styles.css
 C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\scopedcss\projectbundle\Pharmacy.bundle.scp.css
-C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\compressed\5k5mp1sfev-b9sayid5wm.gz
 C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\compressed\fa7qskl1rv-61n19gt1b8.gz
 C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\compressed\da22v29bsv-xtxxf3hu2r.gz
 C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\compressed\kcydf58su4-bqjiyaj88i.gz
@@ -234,4 +233,6 @@ C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\bin\Debug
 C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\Pharmacy.genruntimeconfig.cache
 C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\ref\Pharmacy.dll
 C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\compressed\xcodw5ihyw-rxp3f49vjh.gz
-C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
+C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\Pharmacy.sourcelink.json
+C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\compressed\5k5mp1sfev-gnxhp72g28.gz
+C:\Users\Ayan_Sanger\source\repos\Emarketing project\Pharmacy\Pharmacy\obj\Debug\net9.0\compressed\ih26uprd31-92rvqhjgof.gz

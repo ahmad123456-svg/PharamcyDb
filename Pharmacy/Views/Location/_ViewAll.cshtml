@@ -1,0 +1,79 @@
+@model IEnumerable<Pharmacy.ViewModels.LocationViewModel>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Street</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Country</th>
+                <th>Time Zone</th>
+                <th>Created Date</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                @foreach (var location in Model)
+                {
+                    <tr data-location-id="@location.Id">
+                        <td>@location.Id</td>
+                        <td>@location.Street</td>
+                        <td>@location.City</td>
+                        <td>@location.State</td>
+                        <td>
+                            <span class="badge bg-primary">@location.CountryName</span>
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(location.TimeZone))
+                            {
+                                <span class="badge bg-secondary">@location.TimeZone</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">N/A</span>
+                            }
+                        </td>
+                        <td>@location.CreatedAt.ToString("MMM dd, yyyy")</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a asp-action="Details" asp-route-id="@location.Id" 
+                                   class="btn btn-outline-info" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-primary" 
+                                        onclick="openLocationModal(@location.Id)" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger" 
+                                        onclick="deleteLocation(@location.Id)" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8" class="text-center text-muted">
+                        <p>No locations available. <a href="javascript:void(0)" onclick="openLocationModal()">Add the first location</a></p>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Summary -->
+<div class="row mt-3">
+    <div class="col-12">
+        <p class="text-muted">
+            Total Locations: <strong>@Model.Count()</strong>
+        </p>
+    </div>
+</div>

@@ -1,0 +1,31 @@
+@model dynamic
+
+<form id="countryForm" method="post">
+    @Html.AntiForgeryToken()
+
+    @{
+        var isUpdate = Model is Pharmacy.ViewModels.CountryUpdateViewModel;
+        var idValue = isUpdate ? ((Pharmacy.ViewModels.CountryUpdateViewModel)Model).Id : 0;
+        var nameValue = "";
+        if (Model is Pharmacy.ViewModels.CountryCreateViewModel)
+        {
+            nameValue = ((Pharmacy.ViewModels.CountryCreateViewModel)Model).Name ?? "";
+        }
+        else if (isUpdate)
+        {
+            nameValue = ((Pharmacy.ViewModels.CountryUpdateViewModel)Model).Name ?? "";
+        }
+    }
+
+    <input type="hidden" name="id" value="@idValue" />
+
+    <div class="mb-3">
+        <label class="form-label">
+            <i class="fas fa-flag me-1"></i>
+            Country Name <span class="text-danger">*</span>
+        </label>
+        <input name="Name" class="form-control" placeholder="Enter country name" value="@nameValue" required />
+        <span class="text-danger" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+    </div>
+
+</form>

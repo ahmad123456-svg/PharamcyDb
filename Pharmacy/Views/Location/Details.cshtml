@@ -1,0 +1,116 @@
+@model Pharmacy.ViewModels.LocationViewModel
+
+@{
+    ViewData["Title"] = "Location Details";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-map-marker-alt"></i> Location Details
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <th width="25%">ID:</th>
+                                    <td>@Model.Id</td>
+                                </tr>
+                                <tr>
+                                    <th>Full Address:</th>
+                                    <td><strong>@Model.FullAddress</strong></td>
+                                </tr>
+                                <tr>
+                                    <th>Street:</th>
+                                    <td>@Model.Street</td>
+                                </tr>
+                                <tr>
+                                    <th>City:</th>
+                                    <td>@Model.City</td>
+                                </tr>
+                                <tr>
+                                    <th>State/Province:</th>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(Model.State))
+                                        {
+                                            @Model.State
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not specified</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Country:</th>
+                                    <td>
+                                        <span class="badge bg-primary fs-6">@Model.CountryName</span>
+                                        <a asp-controller="Countries" asp-action="Details" asp-route-id="@Model.CountriesId" 
+                                           class="btn btn-sm btn-outline-primary ms-2">
+                                            <i class="fas fa-external-link-alt"></i> View Country
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Time Zone:</th>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(Model.TimeZone))
+                                        {
+                                            <code>@Model.TimeZone</code>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not specified</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Created Date:</th>
+                                    <td>@Model.CreatedAt.ToString("MMMM dd, yyyy 'at' h:mm tt")</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">Quick Actions</h6>
+                                    <div class="d-grid gap-2">
+                                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                                            <i class="fas fa-edit"></i> Edit Location
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i> Delete Location
+                                        </a>
+                                        <a asp-action="Index" asp-route-selectedCountryId="@Model.CountriesId" class="btn btn-info">
+                                            <i class="fas fa-list"></i> View All in @Model.CountryName
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back to Locations
+                                </a>
+                                <div>
+                                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

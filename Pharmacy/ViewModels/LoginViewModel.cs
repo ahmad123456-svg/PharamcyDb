@@ -7,12 +7,12 @@ namespace Pharmacy.ViewModels
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
         [Display(Name = "Email Address")]
-        public string Email { get; set; }
+    public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required.")]
         [DataType(DataType.Password)]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
-        public string Password { get; set; }
+    public string Password { get; set; } = string.Empty;
 
         [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; }
