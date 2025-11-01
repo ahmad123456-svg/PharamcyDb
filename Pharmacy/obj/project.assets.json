@@ -4891,11 +4891,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Ayan_Sanger\\source\\repos\\Emarketing project\\Pharmacy\\Pharmacy\\Pharmacy.csproj",
+      "projectUniqueName": "C:\\Users\\Ayan_Sanger\\source\\repos\\Emarketing project\\Pharmacy\\Mynewfolder\\PharamcyDb\\Pharmacy\\Pharmacy.csproj",
       "projectName": "Pharmacy",
-      "projectPath": "C:\\Users\\Ayan_Sanger\\source\\repos\\Emarketing project\\Pharmacy\\Pharmacy\\Pharmacy.csproj",
+      "projectPath": "C:\\Users\\Ayan_Sanger\\source\\repos\\Emarketing project\\Pharmacy\\Mynewfolder\\PharamcyDb\\Pharmacy\\Pharmacy.csproj",
       "packagesPath": "C:\\Users\\Ayan_Sanger\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Ayan_Sanger\\source\\repos\\Emarketing project\\Pharmacy\\Pharmacy\\obj\\",
+      "outputPath": "C:\\Users\\Ayan_Sanger\\source\\repos\\Emarketing project\\Pharmacy\\Mynewfolder\\PharamcyDb\\Pharmacy\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
