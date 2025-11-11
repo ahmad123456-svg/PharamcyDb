@@ -6,6 +6,7 @@ using Pharmacy.Models;
 
 namespace Pharmacy.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -35,7 +36,7 @@ namespace Pharmacy.Controllers
                     }
                 }
             }
-            return View();
+            return RedirectToAction("Login", "Account");
         }
 
         [Authorize(Roles = "Admin")]

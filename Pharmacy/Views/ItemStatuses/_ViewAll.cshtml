@@ -1,0 +1,35 @@
+@model List<Pharmacy.ViewModels.ItemStatusViewModel>
+
+<table class="table table-bordered table-striped" id="itemStatusTable">
+    <thead class="table-dark">
+        <tr>
+            <th><i class="fas fa-tags me-1"></i>Status</th>
+            <th width="150"><i class="fas fa-cogs me-1"></i>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Status</td>
+                    <td class="text-center">
+                        <button onclick="openItemStatusModal(@item.Id)" class="btn btn-info btn-sm me-1" title="Edit">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button onclick="deleteItemStatus(@item.Id)" class="btn btn-danger btn-sm" title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="2" class="text-center">No item statuses found.</td>
+            </tr>
+        }
+    </tbody>
+</table>

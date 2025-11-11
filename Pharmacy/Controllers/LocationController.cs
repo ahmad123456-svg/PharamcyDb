@@ -191,19 +191,5 @@ namespace Pharmacy.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-
-        // GET: Location/Details/5
-        public async Task<IActionResult> Details(int id)
-        {
-            var result = await _locationService.GetLocationByIdAsync(id);
-            if (!result.Success)
-            {
-                TempData["Error"] = result.ErrorMessage;
-                return NotFound();
-            }
-
-            var viewModel = result.Data!.ToViewModel();
-            return View(viewModel);
-        }
     }
 }

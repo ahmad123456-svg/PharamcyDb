@@ -19,6 +19,8 @@ html {
 
 body {
   margin-bottom: 60px;
+  background: url('../Images/wallpapers3.webp') no-repeat center center fixed;
+  background-size: cover;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -31,6 +33,10 @@ body {
 }
 
 /* Custom Navbar Styles */
+.navbar {
+  background: linear-gradient(90deg, #b0e0e6 0%, #8fd3e8 35%, #4fa3b6 70%, #2c7a91 100%) !important;
+}
+
 .navbar-brand {
   font-weight: 600;
   color: #0d6efd !important;

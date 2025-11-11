@@ -1,0 +1,31 @@
+@model Pharmacy.ViewModels.ItemStatusUpdateViewModel
+
+<form id="itemStatusForm" asp-action="AddOrEdit" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label">
+            <i class="fas fa-tags me-1"></i>Status <span class="text-danger">*</span>
+        </label>
+        <input asp-for="Status" class="form-control" placeholder="Enter item status" required />
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>Cancel
+        </button>
+        <button type="button" id="saveItemStatusBtn" class="btn btn-primary" onclick="saveItemStatus()">
+            <i class="fas fa-save me-1"></i>Save
+        </button>
+    </div>
+</form>
+
+<script>
+    // Initialize form validation when the form is loaded
+    $(document).ready(function() {
+        initializeFormValidation('#itemStatusForm');
+    });
+</script>

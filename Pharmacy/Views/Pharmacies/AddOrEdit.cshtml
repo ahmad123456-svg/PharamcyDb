@@ -1,0 +1,129 @@
+@model Pharmacy.ViewModels.PharmacyUpdateViewModel
+
+<form id="pharmacyForm" asp-action="AddOrEdit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="PharmacyName" class="form-label">
+                    <i class="fas fa-clinic-medical me-1"></i>Pharmacy Name
+                </label>
+                <input asp-for="PharmacyName" class="form-control" placeholder="Enter pharmacy name" />
+                <span asp-validation-for="PharmacyName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="UserName" class="form-label">
+                    <i class="fas fa-user me-1"></i>Username
+                </label>
+                <input asp-for="UserName" class="form-control" placeholder="Enter username" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">
+                    <i class="fas fa-lock me-1"></i>Password
+                </label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="AccountNumber" class="form-label">
+                    <i class="fas fa-credit-card me-1"></i>Account Number
+                </label>
+                <input asp-for="AccountNumber" class="form-control" placeholder="Enter account number" />
+                <span asp-validation-for="AccountNumber" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="Latitude" class="form-label">
+                    <i class="fas fa-map-marker-alt me-1"></i>Latitude
+                </label>
+                <input asp-for="Latitude" class="form-control" placeholder="Enter latitude" />
+                <span asp-validation-for="Latitude" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="Longitude" class="form-label">
+                    <i class="fas fa-compass me-1"></i>Longitude
+                </label>
+                <input asp-for="Longitude" class="form-control" placeholder="Enter longitude" />
+                <span asp-validation-for="Longitude" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                <label asp-for="LocationsId" class="form-label">
+                    <i class="fas fa-location-arrow me-1"></i>Location
+                </label>
+                <select asp-for="LocationsId" class="form-select">
+                    <option value="">-- Select Location --</option>
+                    @if (Model.AvailableLocations != null)
+                    {
+                        @foreach (var location in Model.AvailableLocations)
+                        {
+                            <option value="@location.Id">@location.DisplayText</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="LocationsId" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden User field - automatically set by controller -->
+    <input type="hidden" asp-for="UserId" />
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                <div class="form-check">
+                    <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                    <label asp-for="IsActive" class="form-check-label">
+                        <i class="fas fa-toggle-on me-1"></i>Is Active
+                    </label>
+                </div>
+                <span asp-validation-for="IsActive" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save me-1"></i>@(Model.Id == 0 ? "Add Pharmacy" : "Update Pharmacy")
+        </button>
+    </div>
+</form>
+
+<script>
+    $(function () {
+        // Focus on first input
+        $('#pharmacyForm input:first').focus();
+        
+        // Handle form submission
+        $('#pharmacyForm').off('submit').on('submit', function (e) {
+            e.preventDefault();
+            savePharmacy();
+        });
+    });
+</script>

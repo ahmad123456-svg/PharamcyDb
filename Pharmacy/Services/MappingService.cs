@@ -91,5 +91,33 @@ namespace Pharmacy.Services
                 TimeZone = viewModel.TimeZone
             };
         }
+
+        // ItemStatus mappings
+        public static ItemStatusViewModel ToListViewModel(this ItemStatus itemStatus)
+        {
+            return new ItemStatusViewModel
+            {
+                Id = itemStatus.Id,
+                Status = itemStatus.Status
+            };
+        }
+
+        public static ItemStatusViewModel ToViewModel(this ItemStatus itemStatus)
+        {
+            return new ItemStatusViewModel
+            {
+                Id = itemStatus.Id,
+                Status = itemStatus.Status
+            };
+        }
+
+        public static ItemStatus ToModel(this ItemStatusUpdateViewModel viewModel)
+        {
+            return new ItemStatus
+            {
+                Id = viewModel.Id,
+                Status = viewModel.Status
+            };
+        }
     }
 }

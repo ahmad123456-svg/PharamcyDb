@@ -176,6 +176,84 @@ namespace Pharmacy.Migrations
                     b.ToTable("countries");
                 });
 
+            modelBuilder.Entity("Pharmacy.Models.ItemStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("item_statuses");
+                });
+
+            modelBuilder.Entity("Pharmacy.Models.Items", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("InsertDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("InsertedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ItemCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ItemDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ItemStatusesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PharmaciesId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("Stock")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemStatusesId");
+
+                    b.HasIndex("PharmaciesId");
+
+                    b.ToTable("Items");
+                });
+
             modelBuilder.Entity("Pharmacy.Models.Location", b =>
                 {
                     b.Property<int>("Id")
@@ -213,6 +291,64 @@ namespace Pharmacy.Migrations
                     b.HasIndex("CountriesId");
 
                     b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("Pharmacy.Models.Pharmacies", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccountNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Latitude")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("LocationsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Longitude")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PharmacyName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationsId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Pharmacies");
                 });
 
             modelBuilder.Entity("Pharmacy.Models.Users", b =>
@@ -260,6 +396,9 @@ namespace Pharmacy.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -335,6 +474,25 @@ namespace Pharmacy.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pharmacy.Models.Items", b =>
+                {
+                    b.HasOne("Pharmacy.Models.ItemStatus", "ItemStatuses")
+                        .WithMany()
+                        .HasForeignKey("ItemStatusesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pharmacy.Models.Pharmacies", "Pharmacies")
+                        .WithMany()
+                        .HasForeignKey("PharmaciesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ItemStatuses");
+
+                    b.Navigation("Pharmacies");
+                });
+
             modelBuilder.Entity("Pharmacy.Models.Location", b =>
                 {
                     b.HasOne("Pharmacy.Models.Country", "Countries")
@@ -344,6 +502,23 @@ namespace Pharmacy.Migrations
                         .IsRequired();
 
                     b.Navigation("Countries");
+                });
+
+            modelBuilder.Entity("Pharmacy.Models.Pharmacies", b =>
+                {
+                    b.HasOne("Pharmacy.Models.Location", "Locations")
+                        .WithMany()
+                        .HasForeignKey("LocationsId");
+
+                    b.HasOne("Pharmacy.Models.Users", "user")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Locations");
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("Pharmacy.Models.Country", b =>

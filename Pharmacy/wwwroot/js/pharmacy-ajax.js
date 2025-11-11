@@ -82,6 +82,55 @@ function initializeFormHandlers() {
     });
 }
 
+// ===================== ITEM STATUS OPERATIONS =====================
+
+function deleteItemStatus(id) {
+    if (confirm('Are you sure you want to delete this item status?')) {
+        $.ajax({
+            url: '/ItemStatuses/Delete/' + id,
+            type: 'POST',
+            success: function (result) {
+                if (result.success) {
+                    showMessage('Item status deleted successfully.', 'success');
+                    $('#itemStatusTable').DataTable().ajax.reload();
+                } else {
+                    showMessage(result.message || 'Failed to delete item status.', 'error');
+                }
+            },
+            error: function () {
+                showMessage('An error occurred while deleting the item status.', 'error');
+            }
+        });
+    }
+}
+
+function submitForm(form) {
+    try {
+        $.ajax({
+            type: 'POST',
+            url: form.action,
+            data: new FormData(form),
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                if (result.success) {
+                    $('#form-modal').modal('hide');
+                    showMessage('Item status saved successfully.', 'success');
+                    $('#itemStatusTable').DataTable().ajax.reload();
+                } else {
+                    showMessage(result.message || 'Failed to save item status.', 'error');
+                }
+            },
+            error: function () {
+                showMessage('An error occurred while saving the item status.', 'error');
+            }
+        });
+    } catch (ex) {
+        console.error(ex);
+    }
+    return false;
+}
+
 // ===================== COUNTRY OPERATIONS =====================
 
 // Load Countries List
@@ -89,6 +138,10 @@ function loadCountriesList() {
     showLoader();
     $.get('/Countries/GetCountries')
         .done(function (data) {
+            if (typeof data === 'string' && data.toLowerCase().indexOf('<form') !== -1 && data.toLowerCase().indexOf('login') !== -1) {
+                window.location = '/Account/Login';
+                return;
+            }
             $('#countriesTableContainer').html(data);
         })
         .fail(function () {
@@ -105,102 +158,71 @@ function openCountryModal(id = 0) {
     const modalTitle = isEdit ? 'Edit Country' : 'Add New Country';
 
     $('#countryModalLabel span').text(modalTitle);
-    $('#saveCountryBtn span').text(isEdit ? 'Update Country' : 'Save Country');
-
     // Load form content
-    $.get('/Countries/AddOrEdit', { id: id }, function (data) {
-        $('#countryModalBody').html(data);
-        $('#countryModal').modal('show');
-
-        // Initialize form validation
-        setTimeout(function() {
-            initializeFormValidation('#countryForm');
-        }, 100);
-    }).fail(function () {
-        showMessage('Failed to load country form.', 'error');
-    });
+    $.get('/Countries/AddOrEdit', { id: id })
+        .done(function (data) {
+            $('#countryModalBody').html(data);
+            var modalEl = document.getElementById('countryModal');
+            var bs = bootstrap.Modal.getOrCreateInstance(modalEl);
+            bs.show();
+            setTimeout(function () { initializeFormValidation('#countryForm'); }, 100);
+        })
+        .fail(function () {
+            showMessage('Failed to load country form.', 'error');
+        });
 }
 
 // Save Country
 function saveCountry() {
     const form = $('#countryForm');
+    if (!form.length) { showMessage('Form not found', 'error'); return; }
     const formData = form.serialize();
-    const id = form.find('input[name="id"]').val() || 0;
 
-    // If form plugin present use its validation otherwise skip
     if (typeof form.valid === 'function' && !form.valid()) {
         showMessage('Please correct the validation errors.', 'error');
         return;
     }
 
-    // Disable save button to prevent duplicate clicks and show inline spinner
     const $saveBtn = $('#saveCountryBtn');
     const originalSaveHtml = $saveBtn.html();
     $saveBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...');
 
     showLoader();
 
-    $.ajax({
-        url: '/Countries/AddOrEdit',
-        method: 'POST',
-        data: formData
-    })
-    .done(function (response) {
-        console.debug('saveLocation done response:', response);
-        console.debug('saveCountry done response:', response);
-        // If server returned JSON (object) with isValid flag
-        if (response && typeof response === 'object' && response.isValid) {
-            showMessage(response.message || 'Saved successfully', 'success');
-            $('#countryModal').modal('hide');
-            if (response.html) {
-                $('#countriesTableContainer').html(response.html);
-            } else {
-                // fallback: reload list
-                loadCountriesList();
+    $.ajax({ url: '/Countries/AddOrEdit', method: 'POST', data: formData })
+        .done(function (response) {
+            console.log('saveCountry response:', response);
+            if (response && typeof response === 'object' && response.isValid) {
+                showMessage(response.message || 'Saved successfully', 'success');
+                try { bootstrap.Modal.getInstance(document.getElementById('countryModal')).hide(); } catch (e) { $('#countryModal').modal('hide'); }
+                if (response.html) $('#countriesTableContainer').html(response.html); else loadCountriesList();
+                return;
             }
-            return;
-        }
 
-        // If server returned HTML (validation errors or entire partial)
-        if (typeof response === 'string') {
-            try {
-                const parsed = JSON.parse(response);
-                if (parsed && parsed.isValid) {
-                    showMessage(parsed.message || 'Saved successfully', 'success');
-                    $('#countryModal').modal('hide');
-                    if (parsed.html) $('#countriesTableContainer').html(parsed.html);
-                    else loadCountriesList();
-                    return;
-                }
-            } catch (e) {
-                // not JSON - treat as HTML fragment (validation errors)
+            if (typeof response === 'string') {
+                // HTML fragment with validation messages
                 $('#countryModalBody').html(response);
                 initializeFormValidation('#countryForm');
                 return;
             }
-        }
 
-        // Unknown response - show message and reload list to be safe
-        showMessage('Unexpected response from server.', 'warning');
-        loadCountriesList();
-    })
-    .fail(function (xhr) {
-        console.debug('saveLocation failed xhr:', xhr);
-        console.debug('saveCountry failed xhr:', xhr);
-        const contentType = xhr.getResponseHeader('Content-Type') || '';
-        if (contentType.indexOf('text/html') !== -1 && xhr.responseText) {
-            $('#countryModalBody').html(xhr.responseText);
-            initializeFormValidation('#countryForm');
-            return;
-        }
-
-        showMessage('An error occurred while saving the country.', 'error');
-    })
-    .always(function () {
-        hideLoader();
-        // restore save button
-        $saveBtn.prop('disabled', false).html(originalSaveHtml);
-    });
+            showMessage('Unexpected response from server.', 'warning');
+            loadCountriesList();
+        })
+        .fail(function (xhr) {
+            console.log('saveCountry failed xhr:', xhr);
+            const contentType = xhr.getResponseHeader('Content-Type') || '';
+            if (contentType.indexOf('text/html') !== -1 && xhr.responseText) {
+                $('#countryModalBody').html(xhr.responseText);
+                initializeFormValidation('#countryForm');
+                return;
+            }
+            showMessage('An error occurred while saving the country.', 'error');
+        })
+        .always(function () {
+            hideLoader();
+            $saveBtn.prop('disabled', false).html(originalSaveHtml);
+        });
 }
 
 // Delete Country
@@ -242,6 +264,10 @@ function loadLocationsList() {
     showLoader();
     $.get('/Location/GetLocations')
         .done(function (data) {
+            if (typeof data === 'string' && data.toLowerCase().indexOf('<form') !== -1 && data.toLowerCase().indexOf('login') !== -1) {
+                window.location = '/Account/Login';
+                return;
+            }
             $('#locationsTableContainer').html(data);
         })
         .fail(function () {
@@ -471,7 +497,20 @@ function initializeFormValidation(formSelector) {
     const form = $(formSelector);
     if (form.length) {
         form.removeData('validator').removeData('unobtrusiveValidation');
-        $.validator.unobtrusive.parse(form);
+        try {
+            // Prefer unobtrusive parse when available
+            if (window.jQuery && $.validator && $.validator.unobtrusive && typeof $.validator.unobtrusive.parse === 'function') {
+                $.validator.unobtrusive.parse(form);
+            } else if (window.jQuery && typeof form.validate === 'function') {
+                // Fallback: initialize jQuery validate if unobtrusive is not present
+                form.validate();
+            } else {
+                // Validation scripts not loaded; log a warning but don't throw
+                console.warn('Validation scripts not available: jquery.validate and/or jquery.validate.unobtrusive');
+            }
+        } catch (ex) {
+            console.error('Error initializing form validation', ex);
+        }
     }
 }
 
@@ -495,4 +534,255 @@ function escapeHtml(text) {
         "'": '&#039;'
     };
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+// ===================== ITEM STATUS OPERATIONS =====================
+
+// Load Item Statuses List
+function loadItemStatuses() {
+    // reuse global loader
+    showLoader();
+    $.get('/ItemStatuses/GetItemStatuses')
+        .done(function (data) {
+            if (typeof data === 'string' && data.toLowerCase().indexOf('<form') !== -1 && data.toLowerCase().indexOf('login') !== -1) {
+                window.location = '/Account/Login';
+                return;
+            }
+            $('#itemStatusTableContainer').html(data);
+        })
+        .fail(function () {
+            showMessage('Failed to load item statuses list.', 'error');
+        })
+        .always(function () {
+            hideLoader();
+        });
+}
+
+// Open ItemStatus Modal
+function openItemStatusModal(id = 0) {
+    const isEdit = id > 0;
+    const modalTitle = isEdit ? 'Edit Status' : 'Add New Status';
+
+    $('#itemStatusModalLabel').text(modalTitle);
+    // Load form content
+    $.get('/ItemStatuses/AddOrEdit', { id: id })
+        .done(function (data) {
+            $('#itemStatusModalBody').html(data);
+            // Bootstrap 5: use native Modal API if available
+            try {
+                var modalEl = document.getElementById('itemStatusModal');
+                if (modalEl) {
+                    var bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    bsModal.show();
+                } else {
+                    // fallback to jQuery if available
+                    $('#itemStatusModal').modal('show');
+                }
+            } catch (e) {
+                // fallback
+                try { $('#itemStatusModal').modal('show'); } catch (e) { console.warn('modal show failed', e); }
+            }
+
+            // initialize validation
+            setTimeout(function () { initializeFormValidation('#itemStatusForm'); }, 100);
+        })
+        .fail(function () {
+            showMessage('Failed to load status form.', 'error');
+        });
+}
+
+// Save ItemStatus
+function saveItemStatus() {
+    const form = $('#itemStatusForm');
+    if (!form.length) { 
+        showMessage('Form not found', 'error'); 
+        return; 
+    }
+
+    // Check if form is valid using jQuery validate
+    if (!form.valid()) {
+        showMessage('Please correct the validation errors.', 'error');
+        return false;
+    }
+
+    const status = $('#Status').val();
+    if (!status || !status.trim()) {
+        showMessage('Please enter a status.', 'error');
+        return false;
+    }
+
+    const $saveBtn = $('#saveItemStatusBtn');
+    const originalSaveHtml = $saveBtn.html();
+    $saveBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...');
+
+    showLoader();
+
+    // Prepare the form data
+    const formData = new FormData();
+    formData.append('Status', status.trim());
+    
+    // Only include Id if it's an edit operation
+    const id = $('#itemStatusForm input[name="Id"]').val();
+    if (id && id !== '0') {
+        formData.append('Id', id);
+    }
+    
+    // Add anti-forgery token
+    const token = $('input[name="__RequestVerificationToken"]').val();
+    formData.append('__RequestVerificationToken', token);
+
+    // Make the AJAX call
+    $.ajax({
+        url: '/ItemStatuses/AddOrEdit',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false
+    }).done(function(response) {
+        console.log('Save response:', response);
+        
+        if (response.isValid) {
+            showMessage(response.message || 'Status saved successfully', 'success');
+            
+            // Close the modal
+            try {
+                var modalInstance = bootstrap.Modal.getInstance(document.getElementById('itemStatusModal'));
+                if (modalInstance) modalInstance.hide();
+            } catch (e) {
+                $('#itemStatusModal').modal('hide');
+            }
+            
+            // Update the table
+            if (response.html) {
+                $('#itemStatusTableContainer').html(response.html);
+            } else {
+                loadItemStatusList();
+            }
+        } else {
+            const errorMessage = response.message || 'Failed to save status';
+            showMessage(errorMessage, 'error');
+        }
+    }).fail(function(xhr) {
+        console.error('Save failed:', xhr);
+        const contentType = xhr.getResponseHeader('Content-Type') || '';
+        if (contentType.indexOf('text/html') !== -1 && xhr.responseText) {
+            $('#itemStatusModalBody').html(xhr.responseText);
+            initializeFormValidation('#itemStatusForm');
+        } else {
+            const errorMessage = xhr.responseJSON?.message || 'An error occurred while saving. Please try again.';
+            showMessage(errorMessage, 'error');
+        }
+    }).always(function() {
+        hideLoader();
+        $saveBtn.prop('disabled', false).html(originalSaveHtml);
+    });
+}
+// Load ItemStatus list (if not using the main loadItemStatuses function)
+function loadItemStatusList() {
+    loadItemStatuses(); // Use the existing function
+}
+
+// Document ready function for ItemStatuses
+$(document).ready(function() {
+    // Load ItemStatuses if on the ItemStatuses page
+    if (window.location.pathname.includes('/ItemStatuses')) {
+        loadItemStatuses();
+    }
+    
+    // Load Pharmacies if on the Pharmacies page
+    if (window.location.pathname.includes('/Pharmacies')) {
+        loadPharmacies();
+    }
+});
+
+// ========================================
+// PHARMACY MANAGEMENT FUNCTIONS
+// ========================================
+
+// Load pharmacies list
+function loadPharmacies() {
+    $.ajax({
+        url: '/Pharmacies/GetPharmacies',
+        type: 'GET',
+        success: function (data) {
+            $('#pharmacyTableContainer').html(data);
+        },
+        error: function () {
+            showMessage('Error loading pharmacies.', 'error');
+        }
+    });
+}
+
+// Open pharmacy modal (add or edit)
+function openPharmacyModal(id = 0) {
+    $.ajax({
+        url: '/Pharmacies/AddOrEdit',
+        type: 'GET',
+        data: { id: id },
+        success: function (data) {
+            $('#pharmacyModal .modal-body').html(data);
+            $('#pharmacyModalLabel').text(id === 0 ? 'Add Pharmacy' : 'Edit Pharmacy');
+            $('#pharmacyModal').modal('show');
+            
+            // Initialize form validation after modal content is loaded
+            setTimeout(function () { initializeFormValidation('#pharmacyForm'); }, 100);
+        },
+        error: function () {
+            showMessage('Error loading pharmacy form.', 'error');
+        }
+    });
+}
+
+// Save pharmacy (add or edit)
+function savePharmacy() {
+    var form = $('#pharmacyForm');
+    var formData = form.serialize();
+    
+    $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: formData,
+        success: function (response) {
+            if (response.isValid) {
+                $('#pharmacyModal').modal('hide');
+                $('#pharmacyTableContainer').html(response.html);
+                showMessage(response.message, 'success');
+            } else {
+                showMessage(response.message || 'Please check your input and try again.', 'error');
+            }
+        },
+        error: function () {
+            showMessage('Error saving pharmacy.', 'error');
+        }
+    });
+}
+
+// Delete pharmacy
+function deletePharmacy(id) {
+    if (confirm('Are you sure you want to delete this pharmacy?')) {
+        $.ajax({
+            url: '/Pharmacies/Delete',
+            type: 'POST',
+            data: { 
+                id: id,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (response) {
+                if (response.success) {
+                    $('#pharmacyTableContainer').html(response.html);
+                    showMessage(response.message, 'success');
+                } else {
+                    showMessage(response.message, 'error');
+                }
+            },
+            error: function () {
+                showMessage('Error deleting pharmacy.', 'error');
+            }
+        });
+    }
+}
+
+// Load Pharmacy list (alias function)
+function loadPharmacyList() {
+    loadPharmacies(); // Use the existing function
 }

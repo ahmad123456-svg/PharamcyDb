@@ -12,6 +12,9 @@ namespace Pharmacy.Data
 
         public DbSet<Country> Countries { get; set; }
         public DbSet<Location> Locations { get; set; }
+        public DbSet<ItemStatus> ItemStatuses { get; set; }
+        public DbSet<Pharmacies> Pharmacies { get; set; }
+        public DbSet<Items> Items { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
