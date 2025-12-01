@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Pharmacy.IServices;
 using Pharmacy.ViewModels;
 using Pharmacy.Services;
@@ -10,6 +11,7 @@ using System.Linq;
 
 namespace Pharmacy.Controllers
 {
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class LocationController : Controller
     {
         private readonly ILocationService _locationService;

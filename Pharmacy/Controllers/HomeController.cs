@@ -26,7 +26,7 @@ namespace Pharmacy.Controllers
                 if (user != null)
                 {
                     var roles = await _userManager.GetRolesAsync(user);
-                    if (roles.Contains("Admin"))
+                    if (roles.Contains("Admin") || roles.Contains("SuperAdmin"))
                     {
                         return View("AdminDashboard");
                     }
@@ -39,7 +39,7 @@ namespace Pharmacy.Controllers
             return RedirectToAction("Login", "Account");
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public IActionResult AdminDashboard()
         {
             return View();

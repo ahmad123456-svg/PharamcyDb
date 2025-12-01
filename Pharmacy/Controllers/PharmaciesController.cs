@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Pharmacy.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class PharmaciesController : Controller
     {
         private readonly IPharmacyService _pharmacyService;
@@ -47,10 +47,21 @@ namespace Pharmacy.Controllers
             var result = await _pharmacyService.GetAllPharmaciesAsync();
             var pharmacies = result.Data ?? Enumerable.Empty<Models.Pharmacies>();
 
+            // If user is Admin (not SuperAdmin), show only their pharmacy
+            if (User.IsInRole("Admin") && !User.IsInRole("SuperAdmin"))
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+                if (currentUser != null)
+                {
+                    pharmacies = pharmacies.Where(p => p.UserId == currentUser.Id);
+                }
+            }
+
             var viewModels = pharmacies.Select(p => p.ToViewModel()).ToList();
             return PartialView("_ViewAll", viewModels);
         }
 
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> AddOrEdit(int id = 0)
         {
             var viewModel = new PharmacyUpdateViewModel();
@@ -64,11 +75,13 @@ namespace Pharmacy.Controllers
             }
             else
             {
-                // For new pharmacy, set current user as default
+                // For new pharmacy, set current user as default and auto-fill username/password
                 var currentUser = await _userManager.GetUserAsync(User);
                 if (currentUser != null)
                 {
                     viewModel.UserId = currentUser.Id;
+                    viewModel.UserName = currentUser.Email; // Auto-fill with logged-in user's email
+                    viewModel.Password = "DefaultPassword@123"; // You can set a default password or leave it for user to see
                 }
             }
 
@@ -85,6 +98,7 @@ namespace Pharmacy.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> AddOrEdit(int id, PharmacyUpdateViewModel vm)
         {
             try
@@ -100,6 +114,53 @@ namespace Pharmacy.Controllers
 
                     if (effectiveId == 0)
                     {
+                        // First, create a new Admin user with the provided username (email)
+                        var userExists = await _userManager.FindByEmailAsync(vm.UserName);
+                        if (userExists == null)
+                        {
+                            var newUser = new Users
+                            {
+                                FullName = vm.PharmacyName, // Use pharmacy name as full name
+                                UserName = vm.UserName,
+                                Email = vm.UserName,
+                                EmailConfirmed = true, // Auto-confirm email
+                                NormalizedUserName = vm.UserName.ToUpper(),
+                                NormalizedEmail = vm.UserName.ToUpper(),
+                                SecurityStamp = Guid.NewGuid().ToString()
+                            };
+
+                            var userResult = await _userManager.CreateAsync(newUser, "Admin@123");
+                            if (userResult.Succeeded)
+                            {
+                                // Assign Admin role to the new user
+                                await _userManager.AddToRoleAsync(newUser, "Admin");
+                                _logger.LogInformation("Created new Admin user: {Email} with password Admin@123", vm.UserName);
+                                
+                                // Set the UserId to the newly created user
+                                vm.UserId = newUser.Id;
+                            }
+                            else
+                            {
+                                _logger.LogError("Failed to create user: {Errors}", string.Join(", ", userResult.Errors.Select(e => e.Description)));
+                                ModelState.AddModelError("", "Failed to create user account: " + string.Join(", ", userResult.Errors.Select(e => e.Description)));
+                                
+                                // Reload dropdowns
+                                var locationsResult = await _locationService.GetAllLocationsAsync();
+                                vm.AvailableLocations = locationsResult.Data?.Select(l => l.ToDropdownViewModel()).ToList() ?? new List<LocationDropdownViewModel>();
+                                
+                                var users = await _context.Users.OrderBy(u => u.FullName).ToListAsync();
+                                vm.AvailableUsers = users.Select(u => u.ToDropdownViewModel()).ToList();
+                                
+                                return PartialView("AddOrEdit", vm);
+                            }
+                        }
+                        else
+                        {
+                            // User already exists, use existing user's ID
+                            vm.UserId = userExists.Id;
+                            _logger.LogInformation("Using existing user: {Email}", vm.UserName);
+                        }
+
                         // Map viewmodel -> model using MappingService
                         var pharmacyModel = vm.ToModel();
                         _logger.LogDebug("Creating pharmacy: {PharmacyName}", pharmacyModel.PharmacyName);
@@ -110,16 +171,16 @@ namespace Pharmacy.Controllers
                             ModelState.AddModelError("", createResult.ErrorMessage ?? "An error occurred while creating the pharmacy.");
                             
                             // Reload dropdowns
-                            var locationsResult = await _locationService.GetAllLocationsAsync();
-                            vm.AvailableLocations = locationsResult.Data?.Select(l => l.ToDropdownViewModel()).ToList() ?? new List<LocationDropdownViewModel>();
+                            var locationsResult2 = await _locationService.GetAllLocationsAsync();
+                            vm.AvailableLocations = locationsResult2.Data?.Select(l => l.ToDropdownViewModel()).ToList() ?? new List<LocationDropdownViewModel>();
                             
-                            var users = await _context.Users.OrderBy(u => u.FullName).ToListAsync();
-                            vm.AvailableUsers = users.Select(u => u.ToDropdownViewModel()).ToList();
+                            var users2 = await _context.Users.OrderBy(u => u.FullName).ToListAsync();
+                            vm.AvailableUsers = users2.Select(u => u.ToDropdownViewModel()).ToList();
                             
                             return PartialView("AddOrEdit", vm);
                         }
 
-                        message = "Pharmacy added successfully";
+                        message = "Pharmacy and Admin user created successfully";
                     }
                     else
                     {
@@ -176,6 +237,7 @@ namespace Pharmacy.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Delete(int id)
         {
             try

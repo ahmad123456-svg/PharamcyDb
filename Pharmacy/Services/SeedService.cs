@@ -24,8 +24,39 @@ namespace Pharmacy.Services
 
                     // Add roles
                     logger.LogInformation("Seeding roles...");
+                    await AddRoleAsync(roleManager, "SuperAdmin");
                     await AddRoleAsync(roleManager, "Admin");
                     await AddRoleAsync(roleManager, "User");
+
+                    // Add SuperAdmin user
+                    logger.LogInformation("Seeding super admin user...");
+                    var superAdminEmail = "superadmin@codehub.com";
+                    var superAdminUser = await userManager.FindByEmailAsync(superAdminEmail);
+                    if (superAdminUser == null)
+                    {
+                        superAdminUser = new Users
+                        {
+                            FullName = "Super Admin",
+                            UserName = superAdminEmail,
+                            Email = superAdminEmail,
+                            EmailConfirmed = true,
+                            NormalizedUserName = superAdminEmail.ToUpper(),
+                            NormalizedEmail = superAdminEmail.ToUpper(),
+                            SecurityStamp = Guid.NewGuid().ToString()
+                        };
+
+                        var result = await userManager.CreateAsync(superAdminUser, "SuperAdmin@123");
+                        if (result.Succeeded)
+                        {
+                            logger.LogInformation("Assigning SuperAdmin role to the super admin user.");
+                            await userManager.AddToRoleAsync(superAdminUser, "SuperAdmin");
+                        }
+                        else
+                        {
+                             logger.LogError("Failed to create super admin user: {Errors}",
+                                string.Join(", ", result.Errors.Select(e => e.Description)));
+                        }
+                    }
 
                     // Add admin user
                     logger.LogInformation("Seeding admin user...");
@@ -38,6 +69,7 @@ namespace Pharmacy.Services
                             FullName = "Code Hub",
                             UserName = adminEmail,
                             Email = adminEmail,
+                            EmailConfirmed = true,
                             NormalizedUserName = adminEmail.ToUpper(),
                             NormalizedEmail = adminEmail.ToUpper(),
                             SecurityStamp = Guid.NewGuid().ToString()

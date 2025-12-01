@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Pharmacy.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class ItemStatusesController : Controller
     {
         private readonly IItemStatusService _itemStatusService;

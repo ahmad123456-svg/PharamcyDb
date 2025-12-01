@@ -17,10 +17,11 @@
         <div class="col-md-6">
             <div class="mb-3">
                 <label asp-for="UserName" class="form-label">
-                    <i class="fas fa-user me-1"></i>Username
+                    <i class="fas fa-user me-1"></i>Username (Email)
                 </label>
-                <input asp-for="UserName" class="form-control" placeholder="Enter username" />
+                <input asp-for="UserName" class="form-control" placeholder="Enter email for new admin user" type="email" />
                 <span asp-validation-for="UserName" class="text-danger"></span>
+                <small class="text-muted">This will create a new Admin user with password: Admin@123</small>
             </div>
         </div>
     </div>
@@ -31,8 +32,9 @@
                 <label asp-for="Password" class="form-label">
                     <i class="fas fa-lock me-1"></i>Password
                 </label>
-                <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" />
+                <input asp-for="Password" type="password" class="form-control" value="Admin@123" readonly />
                 <span asp-validation-for="Password" class="text-danger"></span>
+                <small class="text-muted">Default password for new admin user</small>
             </div>
         </div>
         <div class="col-md-6">

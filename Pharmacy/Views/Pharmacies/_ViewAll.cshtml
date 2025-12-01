@@ -63,12 +63,19 @@
                     </td>
                     <td>@item.CreatedAt.ToString("MMM dd, yyyy")</td>
                     <td class="text-center">
-                        <button onclick="openPharmacyModal(@item.Id)" class="btn btn-info btn-sm me-1" title="Edit">
-                            <i class="fas fa-pencil-alt"></i>
-                        </button>
-                        <button onclick="deletePharmacy(@item.Id)" class="btn btn-danger btn-sm" title="Delete">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                        @if (User.IsInRole("SuperAdmin"))
+                        {
+                            <button onclick="openPharmacyModal(@item.Id)" class="btn btn-info btn-sm me-1" title="Edit">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                            <button onclick="deletePharmacy(@item.Id)" class="btn btn-danger btn-sm" title="Delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No actions</span>
+                        }
                     </td>
                 </tr>
             }

@@ -10,9 +10,12 @@
                     <h3 class="card-title mb-0">
                         <i class="fas fa-clinic-medical me-2"></i>Pharmacies Management
                     </h3>
-                    <button type="button" class="btn btn-primary" onclick="openPharmacyModal()">
-                        <i class="fas fa-plus me-1"></i>Add Pharmacy
-                    </button>
+                    @if (User.IsInRole("SuperAdmin"))
+                    {
+                        <button type="button" class="btn btn-primary" onclick="openPharmacyModal()">
+                            <i class="fas fa-plus me-1"></i>Add Pharmacy
+                        </button>
+                    }
                 </div>
                 <div class="card-body">
                     <div id="pharmacyTableContainer">

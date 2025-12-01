@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Pharmacy.IServices;
 using Pharmacy.ViewModels;
 
 namespace Pharmacy.Controllers;
 
+[Authorize(Roles = "Admin,SuperAdmin")]
 public class ItemsController : Controller
 {
     private readonly IItemService _itemService;
